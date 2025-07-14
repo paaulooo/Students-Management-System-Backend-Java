@@ -26,6 +26,7 @@ public class Main {
             System.out.println("2. View Students");
             System.out.println("3. Update Student");
             System.out.println("4. Delete Student");
+            System.out.println("5. Find Student by RA");
             System.out.println("0. Exit");
             options = sc.nextInt();
             switch(options) {
@@ -33,6 +34,7 @@ public class Main {
                 case 2 -> viewStudents(connection);
                 case 3 -> updateStudent(connection);
                 case 4 -> deleteStudent(connection);
+                case 5 -> findStudentByRa(connection);
                 case 0 -> System.out.println("Exiting the system.");
                 default -> System.out.println("Invalid option. Please try again.");
             }
@@ -152,4 +154,26 @@ public class Main {
             System.out.println("Error deleting student: " + e.getMessage());
         }
     }
+    public static void findStudentByRa(Connection connection) {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Enter Student's RA to find:");
+        int ra = sc.nextInt();
+        String findStudent = "SELECT * FROM sqltest WHERE ra = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(findStudent)){
+            pstmt.setInt(1, ra);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                System.out.println("Student found: " +
+                                   "RA: " + rs.getInt("ra") +
+                                   ", Name: " + rs.getString("name") +
+                                   ", Age: " + rs.getInt("age") +
+                                   ", Course: " + rs.getString("course"));
+            } else {
+                System.out.println("No student found with RA: " + ra);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error finding student: " + e.getMessage());
+        }
+    }
+
 }
